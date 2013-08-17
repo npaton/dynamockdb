@@ -1,4 +1,4 @@
-package main
+package dynamockdb
 
 import (
 	"fmt"
@@ -17,6 +17,7 @@ func (db *DB) GetTable(tableName string) *Table {
 }
 
 func (db *DB) CreateTable(req *CreateTableRequest) *CreateTableResult {
+	fmt.Printf("%+v\n", req)
 	db.Tables[req.TableName] = NewTable(req)
 	return &CreateTableResult{db.Tables[req.TableName].TableDescription}
 }
@@ -26,13 +27,16 @@ func (db *DB) DescribeTable(req *DescribeTableRequest) *DescribeTableResult {
 }
 
 func (db *DB) ListTables(req *ListTablesRequest) ListTablesResult {
-	tableNames := make([]string, len(db.Tables))
+	total := len(db.Tables)
+	tableNames := make([]string, 0, total)
 	lastTableName := ""
 	count := 0
+	totalCount := 0
 	passedStartTableName := false
 	for tableName, _ := range db.Tables {
 		if req.ExclusiveStartTableName != "" {
 			if passedStartTableName {
+				count += 1
 				tableNames = append(tableNames, tableName)
 			} else {
 				if tableName == req.ExclusiveStartTableName {
@@ -40,13 +44,18 @@ func (db *DB) ListTables(req *ListTablesRequest) ListTablesResult {
 				}
 			}
 		} else {
+			count += 1
 			tableNames = append(tableNames, tableName)
 		}
+		totalCount += 1
 		lastTableName = tableName
-		count += 1
-		if req.Limit >= 0 && req.Limit == count {
+		if req.Limit > 0 && req.Limit == count {
 			break
 		}
+	}
+
+	if total == totalCount {
+		lastTableName = ""
 	}
 	return ListTablesResult{TableNames: tableNames, LastEvaluatedTableName: lastTableName}
 }

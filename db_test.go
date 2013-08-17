@@ -1,4 +1,4 @@
-package main
+package dynamockdb
 
 import (
 	"testing"
@@ -46,8 +46,9 @@ func TestListTables(t *testing.T) {
 
 	ExpectTableNames(t, []string{"bar", "baz", "boz", "bor", "bez"}, result.TableNames)
 
-	resultA := db.ListTables(&ListTablesRequest{Limit: 2})
-	expectedB := make([]string, 3)
+	expectedCount, actualCount := 2, 0
+	resultA := db.ListTables(&ListTablesRequest{Limit: expectedCount})
+	expectedB := make([]string, 0, 3)
 	for _, tableName := range []string{"bar", "baz", "boz", "bor", "bez"} {
 		found := false
 		for _, tableNameA := range resultA.TableNames {
@@ -58,7 +59,13 @@ func TestListTables(t *testing.T) {
 		}
 		if !found {
 			expectedB = append(expectedB, tableName)
+		} else {
+			actualCount++
 		}
+	}
+
+	if expectedCount != actualCount {
+		t.Fatalf("Expected %d Tables returned, got %d", expectedCount, actualCount)
 	}
 
 	resultB := db.ListTables(&ListTablesRequest{ExclusiveStartTableName: resultA.LastEvaluatedTableName})
@@ -111,7 +118,7 @@ func ExpectTableNames(t *testing.T, expectedTableNames, otherTableNames []string
 			}
 		}
 		if !found {
-			t.Fatalf("table not found %s", name)
+			t.Fatalf("table not found %s", name, expectedTableNames, otherTableNames)
 		}
 	}
 }

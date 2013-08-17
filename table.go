@@ -1,4 +1,4 @@
-package main
+package dynamockdb
 
 import (
 	"fmt"
@@ -60,7 +60,6 @@ func (t *Table) UpdateTable(req *UpdateTableRequest) (*UpdateTableResult, error)
 	if t.TableDescription.ProvisionedThroughput.numberOfDecreasesDay == compTime {
 		t.TableDescription.ProvisionedThroughput.numberOfDecreasesDay = today
 	}
-
 	if t.TableDescription.ProvisionedThroughput.numberOfDecreasesDay != today {
 		t.TableDescription.ProvisionedThroughput.numberOfDecreasesDay = today
 		t.TableDescription.ProvisionedThroughput.NumberOfDecreasesToday = 0
@@ -175,7 +174,6 @@ func (t *Table) UpdateItem(req *UpdateItemRequest) (*UpdateItemResult, error) {
 
 func (t *Table) PutItem(req *PutItemRequest) (*PutItemResult, error) {
 
-	// Hash key for Table
 	hashKey := t.HashKey()
 
 	// Hash key value for item
@@ -322,25 +320,6 @@ func (t *Table) GetItem(req *GetItemRequest) (*GetItemResult, error) {
 	return result, nil
 }
 
-// type QueryRequest struct {
-// 	AttributesToGet        []string
-// 	ConsistentRead         bool
-// 	ExclusiveStartKey      map[string]AttributeValue // min 3 max 255
-// 	TableName              string
-// 	IndexName              string
-// 	KeyConditions          map[string]Condition
-// 	Limit                  int
-// 	ReturnConsumedCapacity ReturnConsumedCapacity
-// 	Select                 QuerySelect
-// }
-
-// type QueryResult struct {
-// 	ConsumedCapacity ConsumedCapacity
-// 	Count            int
-// 	Items            []string
-// 	LastEvaluatedKey map[string]AttributeValue
-// }
-
 func (t *Table) Query(req *QueryRequest) (*QueryResult, error) {
 	count := 0
 	items := make([]map[string]AttributeValue, 0, 20)
@@ -348,7 +327,7 @@ func (t *Table) Query(req *QueryRequest) (*QueryResult, error) {
 	rangeKey := t.RangeKey()
 	var hashCondition Condition
 	var rangeCondition Condition
-	
+
 	for keyName, condition := range req.KeyConditions {
 		if keyName == hashKey.AttributeName {
 			hashCondition = condition
@@ -358,7 +337,7 @@ func (t *Table) Query(req *QueryRequest) (*QueryResult, error) {
 			return nil, fmt.Errorf("Query: Invalid KeyCondition, not on has or range fields. %v", keyName)
 		}
 	}
-	
+
 	for _, key := range t.InsertOrder {
 		value := t.Items[key]
 		switch hashCondition.ConditionOperator {

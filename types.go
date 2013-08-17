@@ -1,4 +1,4 @@
-package main
+package dynamockdb
 
 import (
 	"time"
@@ -169,7 +169,7 @@ type ListTablesRequest struct {
 }
 
 type ListTablesResult struct {
-	LastEvaluatedTableName string // min 3 max 255
+	LastEvaluatedTableName string `json:",omitempty"`
 	TableNames             []string
 }
 

@@ -1,4 +1,4 @@
-package main
+package dynamockdb
 
 import (
 	"testing"
@@ -342,33 +342,6 @@ func TestUpdateTable(t *testing.T) {
 	}
 }
 
-// type QuerySelect string
-
-// const (
-// 	AllAttributesQuerySelect                QuerySelect = "ALL_ATTRIBUTES"
-// 	AllProjectedAttributesQuerySelect                   = "ALL_PROJECTED_ATTRIBUTES"
-// 	SpecificAttributesAttributesQuerySelect             = "SPECIFIC_ATTRIBUTES"
-// 	CountQuerySelect                                    = "COUNT"
-// )
-
-// type QueryRequest struct {
-// 	AttributesToGet        []string
-// 	ConsistentRead         bool
-// 	ExclusiveStartKey      map[string]AttributeValue // min 3 max 255
-// 	TableName              string
-// 	IndexName              string
-// 	KeyConditions          map[string]Condition
-// 	Limit                  int
-// 	ReturnConsumedCapacity ReturnConsumedCapacity
-// 	Select                 QuerySelect
-// }
-
-// type QueryResult struct {
-// 	ConsumedCapacity ConsumedCapacity
-// 	Count            int
-// 	Items            []map[string]AttributeValue
-// 	LastEvaluatedKey map[string]AttributeValue
-// }
 
 func TestQuery(t *testing.T) {
 	db := NewDB()
@@ -554,32 +527,6 @@ func TestQueryLimit(t *testing.T) {
 	InsertItem(table, "bax", map[string]AttributeValue{"id": AttributeValue{S: "5"}, "foo": AttributeValue{S: "bar8"}})
 	
 }
-// type ConditionOperator string
-
-// const (
-// 	EQ           ConditionOperator = "EQ"
-// 	NE                             = "NE"
-// 	IN                             = "IN"
-// 	LE                             = "LE"
-// 	LT                             = "LT"
-// 	GE                             = "GE"
-// 	GT                             = "GT"
-// 	BETWEEN                        = "BETWEEN"
-// 	NOT_NULL                       = "NOT_NULL"
-// 	NULL                           = "NULL"
-// 	CONTAINS                       = "CONTAINS"
-// 	NOT_CONTAINS                   = "NOT_CONTAINS"
-// 	BEGINS_WITH                    = "BEGINS_WITH"
-// )
-
-// type Condition struct {
-// 	ConditionOperator  ConditionOperator
-// 	AttributeValueList []AttributeValue
-// }
-
-//
-// Helpers
-//
 
 func InsertItem(table *Table, tableName string, item map[string]AttributeValue) {
 	req := &PutItemRequest{
@@ -592,5 +539,4 @@ func InsertItem(table *Table, tableName string, item map[string]AttributeValue) 
 	if err != nil {
 		panic(err)
 	}
-	// return result.Ite
 }
